@@ -425,6 +425,7 @@ static void ion_handle_get(struct ion_handle *handle)
 	kref_get(&handle->ref);
 }
 
+<<<<<<< HEAD
 /* Must hold the client lock */
 static struct ion_handle *ion_handle_get_check_overflow(struct ion_handle *handle)
 {
@@ -434,6 +435,8 @@ static struct ion_handle *ion_handle_get_check_overflow(struct ion_handle *handl
 	return handle;
 }
 
+=======
+>>>>>>> v3.18.98
 static int ion_handle_put_nolock(struct ion_handle *handle)
 {
 	int ret;
@@ -524,9 +527,25 @@ static struct ion_handle *ion_handle_get_by_id_nolock(struct ion_client *client,
 
 	handle = idr_find(&client->idr, id);
 	if (handle)
+<<<<<<< HEAD
 		return ion_handle_get_check_overflow(handle);
 
 	return ERR_PTR(-EINVAL);
+}
+
+struct ion_handle *ion_handle_get_by_id(struct ion_client *client,
+						int id)
+{
+	struct ion_handle *handle;
+
+	mutex_lock(&client->lock);
+	handle = ion_handle_get_by_id_nolock(client, id);
+	mutex_unlock(&client->lock);
+=======
+		ion_handle_get(handle);
+>>>>>>> v3.18.98
+
+	return handle;
 }
 
 struct ion_handle *ion_handle_get_by_id(struct ion_client *client,
@@ -694,6 +713,7 @@ static void ion_free_nolock(struct ion_client *client, struct ion_handle *handle
 	ion_handle_put_nolock(handle);
 }
 
+<<<<<<< HEAD
 static void user_ion_free_nolock(struct ion_client *client, struct ion_handle *handle)
 {
 	bool valid_handle;
@@ -711,6 +731,8 @@ static void user_ion_free_nolock(struct ion_client *client, struct ion_handle *h
 	user_ion_handle_put_nolock(handle);
 }
 
+=======
+>>>>>>> v3.18.98
 void ion_free(struct ion_client *client, struct ion_handle *handle)
 {
 	BUG_ON(client != handle->client);
@@ -718,8 +740,11 @@ void ion_free(struct ion_client *client, struct ion_handle *handle)
 	mutex_lock(&client->lock);
 	ion_free_nolock(client, handle);
 	mutex_unlock(&client->lock);
+<<<<<<< HEAD
 	MMProfileLogEx(ION_MMP_Events[PROFILE_FREE], MMProfileFlagPulse,
 			 (unsigned long)client, (unsigned long)handle);
+=======
+>>>>>>> v3.18.98
 }
 EXPORT_SYMBOL(ion_free);
 
@@ -1562,10 +1587,16 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		handle = ion_handle_get_by_id_nolock(client, data.handle.handle);
 		if (IS_ERR(handle)) {
 			mutex_unlock(&client->lock);
+<<<<<<< HEAD
 			IONMSG("ION_IOC_FREE handle is invalid. handle = %d, ret = %d.\n", data.handle.handle, ret);
 			return PTR_ERR(handle);
 		}
 		user_ion_free_nolock(client, handle);
+=======
+			return PTR_ERR(handle);
+		}
+		ion_free_nolock(client, handle);
+>>>>>>> v3.18.98
 		ion_handle_put_nolock(handle);
 		mutex_unlock(&client->lock);
 		break;

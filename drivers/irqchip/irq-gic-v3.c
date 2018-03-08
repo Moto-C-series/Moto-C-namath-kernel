@@ -490,7 +490,7 @@ static void gic_raise_softirq(const struct cpumask *mask, unsigned int irq)
 	 * Ensure that stores to Normal memory are visible to the
 	 * other CPUs before issuing the IPI.
 	 */
-	smp_wmb();
+	wmb();
 
 	for_each_cpu_mask(cpu, *mask) {
 		unsigned long cluster_id = cpu_logical_map(cpu) & ~0xffUL;
@@ -518,7 +518,13 @@ static int gic_set_affinity(struct irq_data *d, const struct cpumask *mask_val,
 	int enabled;
 	u64 val;
 
+<<<<<<< HEAD
 #ifndef CONFIG_MTK_IRQ_NEW_DESIGN
+=======
+	if (cpu >= nr_cpu_ids)
+		return -EINVAL;
+
+>>>>>>> v3.18.98
 	if (gic_irq_in_rdist(d))
 		return -EINVAL;
 

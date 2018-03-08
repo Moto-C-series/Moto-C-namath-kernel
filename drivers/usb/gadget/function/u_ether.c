@@ -907,7 +907,10 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 
 	req->length = length;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v3.18.98
 	retval = usb_ep_queue(in, req, GFP_ATOMIC);
 	switch (retval) {
 	default:

@@ -796,11 +796,7 @@ ssize_t tcp_splice_read(struct socket *sock, loff_t *ppos,
 				ret = -EAGAIN;
 				break;
 			}
-<<<<<<< HEAD
 			 /* if __tcp_splice_read() got nothing while we have
-=======
-			/* if __tcp_splice_read() got nothing while we have
->>>>>>> v3.18.98
 			 * an skb in receive queue, we do not want to loop.
 			 * This might happen with URG data.
 			 */
@@ -970,7 +966,7 @@ new_segment:
 
 		i = skb_shinfo(skb)->nr_frags;
 		can_coalesce = skb_can_coalesce(skb, i, page, offset);
-		if (!can_coalesce && i >= sysctl_max_skb_frags) {
+		if (!can_coalesce && i >= MAX_SKB_FRAGS) {
 			tcp_mark_push(tp, skb);
 			goto new_segment;
 		}
@@ -1259,7 +1255,7 @@ new_segment:
 
 				if (!skb_can_coalesce(skb, i, pfrag->page,
 						      pfrag->offset)) {
-					if (i == sysctl_max_skb_frags || !sg) {
+					if (i == MAX_SKB_FRAGS || !sg) {
 						tcp_mark_push(tp, skb);
 						goto new_segment;
 					}

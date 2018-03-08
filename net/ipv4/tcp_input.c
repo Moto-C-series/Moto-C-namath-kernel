@@ -3332,8 +3332,9 @@ static void tcp_send_challenge_ack(struct sock *sk)
 
 		challenge_timestamp = now;
 		WRITE_ONCE(challenge_count, half +
-			   prandom_u32_max(sysctl_tcp_challenge_ack_limit));
+				prandom_u32_max(sysctl_tcp_challenge_ack_limit));
 	}
+
 	count = READ_ONCE(challenge_count);
 	if (count > 0) {
 		WRITE_ONCE(challenge_count, count - 1);
@@ -5298,17 +5299,12 @@ void tcp_finish_connect(struct sock *sk, struct sk_buff *skb)
 #endif
 
 	tcp_set_state(sk, TCP_ESTABLISHED);
-<<<<<<< HEAD
 #ifdef CONFIG_MTK_NET_LOGGING
 	if (skb) {
 		pr_info("[mtk_net][tcp_finish_connect] inode = %lu; sport = %d; dport = %d\n",
 			sk->sk_socket ? SOCK_INODE(sk->sk_socket)->i_ino : 0, ntohs(th->dest), ntohs(th->source));
 	}
 #endif
-=======
-	icsk->icsk_ack.lrcvtime = tcp_time_stamp;
-
->>>>>>> v3.18.98
 	if (skb != NULL) {
 		icsk->icsk_af_ops->sk_rx_dst_set(sk, skb);
 		security_inet_conn_established(sk, skb);
@@ -5511,6 +5507,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
 			 * to stand against the temptation 8)     --ANK
 			 */
 			inet_csk_schedule_ack(sk);
+			icsk->icsk_ack.lrcvtime = tcp_time_stamp;
 			tcp_enter_quickack_mode(sk);
 			inet_csk_reset_xmit_timer(sk, ICSK_TIME_DACK,
 						  TCP_DELACK_MAX, sysctl_tcp_rto_max);

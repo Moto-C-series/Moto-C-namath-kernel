@@ -703,11 +703,7 @@ el0_inv:
 	mov	x0, sp
 	mov	x1, #BAD_SYNC
 	mrs	x2, esr_el1
-<<<<<<< HEAD
 	bl	bad_mode
-=======
-	bl	bad_el0_sync
->>>>>>> v3.18.98
 	b	ret_to_user
 ENDPROC(el0_sync)
 

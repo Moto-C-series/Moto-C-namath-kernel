@@ -1610,6 +1610,19 @@ void split_page(struct page *page, unsigned int order)
 		split_page(virt_to_page(page[0].shadow), order);
 #endif
 
+#ifdef CONFIG_PAGE_OWNER_SLIM
+	/*
+	 * Normal page owner do not need to reset page owner for split
+	 * page, because page_ext belong to each page.
+	 * Normal page owner directly rewrite owner of page_ext.
+	 * In CONFIG_PAGE_OWNER_SLIM case, number of page count will
+	 * break balance (allocate/free) when directly rewrite page
+	 * owner.
+	 * Split page need to modify owner surly. We reset page owner
+	 * than set page owner to guarantee allocate/free are balanced.
+	 */
+	reset_page_owner(page, order);
+#endif
 	set_page_owner(page, 0, 0);
 	for (i = 1; i < (1 << order); i++) {
 		set_page_refcounted(page + i);
@@ -6703,16 +6716,12 @@ int alloc_contig_range(unsigned long start, unsigned long end,
 
 	/* Make sure the range is really isolated. */
 	if (test_pages_isolated(outer_start, end, false)) {
-<<<<<<< HEAD
 #if defined(CONFIG_CMA_DEBUG) && defined(CONFIG_PAGE_OWNER)
 		struct page *page;
 		unsigned long pfn;
 		int bt_per_fail = 5;
 #endif
 		pr_info("%s: [%lx, %lx) PFNs busy\n",
-=======
-		pr_info_ratelimited("%s: [%lx, %lx) PFNs busy\n",
->>>>>>> v3.18.98
 			__func__, outer_start, end);
 #if defined(CONFIG_CMA_DEBUG) && defined(CONFIG_PAGE_OWNER)
 		pr_info("========\n");
